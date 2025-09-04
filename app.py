@@ -12,27 +12,237 @@ import xgboost as xgb
 # Page config
 st.set_page_config(page_title="TV Impressions Forecasting Platform", layout="wide", initial_sidebar_state="expanded")
 
-# Custom CSS for better styling
+# EY Brand Colors & Custom CSS
 st.markdown("""
 <style>
+    /* EY Color Variables */
+    :root {
+        --ey-yellow: #FFE600;
+        --ey-black: #2E2E38;
+        --ey-dark-grey: #4A4A4A;
+        --ey-light-grey: #F5F5F5;
+        --ey-medium-grey: #8C8C8C;
+        --ey-white: #FFFFFF;
+    }
+
+    /* Main app background */
+    .main > div {
+        background-color: var(--ey-light-grey);
+        padding-top: 1rem;
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg {
+        background-color: var(--ey-black) !important;
+    }
+    
+    .css-1d391kg .css-1v0mbdj {
+        color: var(--ey-white) !important;
+    }
+    
+    .css-1d391kg .stSelectbox label,
+    .css-1d391kg .stNumberInput label,
+    .css-1d391kg .stSlider label {
+        color: var(--ey-yellow) !important;
+        font-weight: 600 !important;
+    }
+    
+    .css-1d391kg .stMarkdown {
+        color: var(--ey-white) !important;
+    }
+    
+    .css-1d391kg .stInfo {
+        background-color: var(--ey-dark-grey) !important;
+        color: var(--ey-yellow) !important;
+        border: 1px solid var(--ey-yellow) !important;
+    }
+
+    /* Header styling */
+    h1 {
+        color: var(--ey-black) !important;
+        background: linear-gradient(90deg, var(--ey-yellow) 0%, var(--ey-yellow) 100%) !important;
+        padding: 20px !important;
+        border-radius: 10px !important;
+        margin-bottom: 30px !important;
+        text-align: center !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    h2, h3 {
+        color: var(--ey-black) !important;
+        border-bottom: 3px solid var(--ey-yellow) !important;
+        padding-bottom: 10px !important;
+    }
+
+    /* Metric cards */
     .metric-card {
-        background-color: #f0f2f6;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        margin: 10px 0;
+        background: linear-gradient(135deg, var(--ey-white) 0%, var(--ey-light-grey) 100%) !important;
+        padding: 25px !important;
+        border-radius: 15px !important;
+        text-align: center !important;
+        margin: 15px 0 !important;
+        border: 2px solid var(--ey-yellow) !important;
+        box-shadow: 0 6px 12px rgba(46, 46, 56, 0.15) !important;
+        transition: transform 0.2s ease !important;
     }
+    
+    .metric-card:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 16px rgba(46, 46, 56, 0.2) !important;
+    }
+
+    /* Status indicators */
     .under-delivery {
-        color: #ff4b4b;
-        font-weight: bold;
+        color: #E74C3C !important;
+        font-weight: bold !important;
+        background-color: rgba(231, 76, 60, 0.1) !important;
+        padding: 5px 10px !important;
+        border-radius: 20px !important;
+        border: 2px solid #E74C3C !important;
     }
+    
     .over-delivery {
-        color: #0068c9;
-        font-weight: bold;
+        color: var(--ey-black) !important;
+        font-weight: bold !important;
+        background-color: var(--ey-yellow) !important;
+        padding: 5px 10px !important;
+        border-radius: 20px !important;
+        border: 2px solid var(--ey-black) !important;
     }
+    
     .savings {
-        color: #00cc88;
-        font-weight: bold;
+        color: #27AE60 !important;
+        font-weight: bold !important;
+        background-color: rgba(39, 174, 96, 0.1) !important;
+        padding: 5px 10px !important;
+        border-radius: 20px !important;
+        border: 2px solid #27AE60 !important;
+    }
+
+    /* Tabs styling */
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: var(--ey-black) !important;
+        border-radius: 10px 10px 0 0 !important;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        color: var(--ey-white) !important;
+        background-color: var(--ey-black) !important;
+        border: none !important;
+        padding: 15px 25px !important;
+        font-weight: 600 !important;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: var(--ey-dark-grey) !important;
+        color: var(--ey-yellow) !important;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background-color: var(--ey-yellow) !important;
+        color: var(--ey-black) !important;
+    }
+
+    /* Metrics styling */
+    [data-testid="metric-container"] {
+        background: linear-gradient(135deg, var(--ey-white) 0%, var(--ey-light-grey) 100%) !important;
+        border: 2px solid var(--ey-yellow) !important;
+        padding: 20px !important;
+        border-radius: 15px !important;
+        box-shadow: 0 4px 8px rgba(46, 46, 56, 0.1) !important;
+    }
+    
+    [data-testid="metric-container"] > label {
+        color: var(--ey-black) !important;
+        font-weight: 600 !important;
+    }
+    
+    [data-testid="metric-container"] > div {
+        color: var(--ey-black) !important;
+        font-size: 2rem !important;
+        font-weight: bold !important;
+    }
+
+    /* Button styling */
+    .stButton > button {
+        background: linear-gradient(135deg, var(--ey-yellow) 0%, #FFD700 100%) !important;
+        color: var(--ey-black) !important;
+        border: 2px solid var(--ey-black) !important;
+        border-radius: 25px !important;
+        padding: 15px 30px !important;
+        font-weight: bold !important;
+        transition: all 0.3s ease !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+    }
+    
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #FFD700 0%, var(--ey-yellow) 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 12px rgba(255, 230, 0, 0.4) !important;
+    }
+
+    /* Download button */
+    .stDownloadButton > button {
+        background: linear-gradient(135deg, var(--ey-black) 0%, var(--ey-dark-grey) 100%) !important;
+        color: var(--ey-yellow) !important;
+        border: 2px solid var(--ey-yellow) !important;
+        border-radius: 25px !important;
+        padding: 15px 30px !important;
+        font-weight: bold !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .stDownloadButton > button:hover {
+        background: var(--ey-yellow) !important;
+        color: var(--ey-black) !important;
+    }
+
+    /* Info/success/warning boxes */
+    .stInfo {
+        background: linear-gradient(135deg, var(--ey-light-grey) 0%, var(--ey-white) 100%) !important;
+        border-left: 5px solid var(--ey-yellow) !important;
+        color: var(--ey-black) !important;
+        border-radius: 0 10px 10px 0 !important;
+    }
+    
+    .stSuccess {
+        background: linear-gradient(135deg, rgba(39, 174, 96, 0.1) 0%, rgba(39, 174, 96, 0.05) 100%) !important;
+        border-left: 5px solid #27AE60 !important;
+        color: var(--ey-black) !important;
+        border-radius: 0 10px 10px 0 !important;
+    }
+    
+    .stWarning {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%) !important;
+        border-left: 5px solid #FFC107 !important;
+        color: var(--ey-black) !important;
+        border-radius: 0 10px 10px 0 !important;
+    }
+
+    /* Dataframe styling */
+    .stDataFrame {
+        background-color: var(--ey-white) !important;
+        border: 2px solid var(--ey-yellow) !important;
+        border-radius: 10px !important;
+    }
+
+    /* Custom EY branding */
+    .ey-brand-section {
+        background: linear-gradient(135deg, var(--ey-black) 0%, var(--ey-dark-grey) 100%) !important;
+        color: var(--ey-white) !important;
+        padding: 30px !important;
+        border-radius: 15px !important;
+        margin: 20px 0 !important;
+        border: 3px solid var(--ey-yellow) !important;
+    }
+    
+    .ey-highlight {
+        background: var(--ey-yellow) !important;
+        color: var(--ey-black) !important;
+        padding: 2px 8px !important;
+        border-radius: 5px !important;
+        font-weight: bold !important;
     }
 </style>
 """, unsafe_allow_html=True)
